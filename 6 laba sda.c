@@ -7,7 +7,6 @@ typedef struct Node {
     struct Node *right;
 } Node;
 
-/* ─── Создание узла ─────────────────────────────────────────────────────── */
 
 Node *create_node(int value) {
     Node *new_node = (Node *)malloc(sizeof(Node));
@@ -21,7 +20,6 @@ Node *create_node(int value) {
     return new_node;
 }
 
-/* ─── Вставка ───────────────────────────────────────────────────────────── */
 
 Node *insert(Node *root, int value) {
     if (root == NULL)
@@ -34,7 +32,6 @@ Node *insert(Node *root, int value) {
     return root;
 }
 
-/* ─── Обходы ────────────────────────────────────────────────────────────── */
 
 void preorder(Node *root) {
     if (root == NULL) return;
@@ -59,7 +56,6 @@ void postorder(Node *root) {
 
 void dfs(Node *root) { inorder(root); }
 
-/* ─── BFS (очередь) ─────────────────────────────────────────────────────── */
 
 #define MAX_QUEUE 256
 
@@ -87,7 +83,6 @@ void bfs(Node *root) {
     }
 }
 
-/* ─── Поиск ─────────────────────────────────────────────────────────────── */
 
 Node *search(Node *root, int key) {
     if (root == NULL)       return NULL;
@@ -96,7 +91,6 @@ Node *search(Node *root, int key) {
     else                    return search(root->right, key);
 }
 
-/* ─── Минимум и максимум ────────────────────────────────────────────────── */
 
 Node *find_min(Node *root) {
     if (root == NULL) return NULL;
@@ -112,7 +106,6 @@ Node *find_max(Node *root) {
     return root;
 }
 
-/* ─── Высота дерева ─────────────────────────────────────────────────────── */
 
 int tree_height(Node *root) {
     if (root == NULL) return 0;
@@ -121,15 +114,6 @@ int tree_height(Node *root) {
     return 1 + (left_h > right_h ? left_h : right_h);
 }
 
-/* ─── Удаление узла ─────────────────────────────────────────────────────── */
-/*
- * Три случая:
- *  1. Лист               — просто освобождаем узел.
- *  2. Один потомок       — заменяем узел его единственным потомком.
- *  3. Два потомка        — заменяем значение узла минимальным из правого
- *                          поддерева (inorder-преемник), затем удаляем
- *                          преемника из правого поддерева.
- */
 Node *delete_node(Node *root, int key) {
     if (root == NULL) {
         printf("Элемент %d не найден.\n", key);
@@ -141,21 +125,18 @@ Node *delete_node(Node *root, int key) {
     } else if (key > root->data) {
         root->right = delete_node(root->right, key);
     } else {
-        /* Узел найден */
 
-        /* Случай 1 & 2: нет левого потомка */
         if (root->left == NULL) {
             Node *tmp = root->right;
             free(root);
             return tmp;
         }
-        /* Случай 2: нет правого потомка */
+   
         if (root->right == NULL) {
             Node *tmp = root->left;
             free(root);
             return tmp;
         }
-        /* Случай 3: два потомка — ищем inorder-преемника (min в правом) */
         Node *successor   = find_min(root->right);
         root->data        = successor->data;          /* копируем значение */
         root->right       = delete_node(root->right, successor->data);
@@ -163,7 +144,6 @@ Node *delete_node(Node *root, int key) {
     return root;
 }
 
-/* ─── Освобождение памяти ───────────────────────────────────────────────── */
 
 void free_tree(Node *root) {
     if (root == NULL) return;
@@ -171,12 +151,6 @@ void free_tree(Node *root) {
     free_tree(root->right);
     free(root);
 }
-
-/* ─── Сохранение / загрузка (текстовый формат, preorder) ───────────────── */
-/*
- * Формат файла: числа через пробел, NULL-узлы записываются как символ '#'.
- * Такое представление позволяет точно восстановить структуру дерева.
- */
 
 void save_tree(Node *root, FILE *fp) {
     if (root == NULL) {
@@ -200,7 +174,6 @@ Node *load_tree(FILE *fp) {
     return node;
 }
 
-/* ─── Меню ──────────────────────────────────────────────────────────────── */
 
 void print_menu(void) {
     printf("\n══════════════════════════════════════\n");
@@ -222,7 +195,6 @@ void print_menu(void) {
     printf("Выберите пункт: ");
 }
 
-/* ─── main ──────────────────────────────────────────────────────────────── */
 
 int main(void) {
     Node *root = NULL;
@@ -235,8 +207,6 @@ int main(void) {
         if (scanf("%d", &choice) != 1) break;
 
         switch (choice) {
-
-            /* ── 1. Вставка ─────────────────────────────────────────────── */
             case 1:
                 printf("Введите значение: ");
                 scanf("%d", &value);
@@ -244,7 +214,6 @@ int main(void) {
                 printf("Элемент %d добавлен.\n", value);
                 break;
 
-            /* ── 2. Прямой обход ────────────────────────────────────────── */
             case 2:
                 if (!root) { printf("Дерево пустое.\n"); break; }
                 printf("Прямой обход (NLR): ");
@@ -252,7 +221,6 @@ int main(void) {
                 printf("\n");
                 break;
 
-            /* ── 3. Центрированный обход ────────────────────────────────── */
             case 3:
                 if (!root) { printf("Дерево пустое.\n"); break; }
                 printf("Центрированный обход (LNR): ");
@@ -260,7 +228,6 @@ int main(void) {
                 printf("\n");
                 break;
 
-            /* ── 4. Обратный обход ──────────────────────────────────────── */
             case 4:
                 if (!root) { printf("Дерево пустое.\n"); break; }
                 printf("Обратный обход (LRN): ");
@@ -268,7 +235,6 @@ int main(void) {
                 printf("\n");
                 break;
 
-            /* ── 5. DFS ─────────────────────────────────────────────────── */
             case 5:
                 if (!root) { printf("Дерево пустое.\n"); break; }
                 printf("Обход в глубину (DFS): ");
@@ -276,7 +242,6 @@ int main(void) {
                 printf("\n");
                 break;
 
-            /* ── 6. BFS ─────────────────────────────────────────────────── */
             case 6:
                 if (!root) { printf("Дерево пустое.\n"); break; }
                 printf("Обход в ширину (BFS): ");
@@ -284,7 +249,6 @@ int main(void) {
                 printf("\n");
                 break;
 
-            /* ── 7. Поиск ───────────────────────────────────────────────── */
             case 7:
                 if (!root) { printf("Дерево пустое.\n"); break; }
                 printf("Введите ключ для поиска: ");
@@ -295,7 +259,6 @@ int main(void) {
                     printf("Элемент %d НЕ НАЙДЕН.\n", value);
                 break;
 
-            /* ── 8. Удаление ────────────────────────────────────────────── */
             case 8:
                 if (!root) { printf("Дерево пустое.\n"); break; }
                 printf("Введите значение для удаления: ");
@@ -304,19 +267,18 @@ int main(void) {
                 printf("Готово.\n");
                 break;
 
-            /* ── 9. Мин / Макс ──────────────────────────────────────────── */
+    
             case 9:
                 if (!root) { printf("Дерево пустое.\n"); break; }
                 printf("Минимум: %d\n", find_min(root)->data);
                 printf("Максимум: %d\n", find_max(root)->data);
                 break;
 
-            /* ── 10. Высота ─────────────────────────────────────────────── */
+
             case 10:
                 printf("Высота дерева: %d\n", tree_height(root));
                 break;
 
-            /* ── 11. Сохранение ─────────────────────────────────────────── */
             case 11:
                 printf("Имя файла для сохранения: ");
                 scanf("%255s", filename);
@@ -327,7 +289,6 @@ int main(void) {
                 printf("Дерево сохранено в '%s'.\n", filename);
                 break;
 
-            /* ── 12. Загрузка ───────────────────────────────────────────── */
             case 12:
                 printf("Имя файла для загрузки: ");
                 scanf("%255s", filename);
@@ -339,14 +300,12 @@ int main(void) {
                 printf("Дерево загружено из '%s'.\n", filename);
                 break;
 
-            /* ── 13. Очистка ────────────────────────────────────────────── */
             case 13:
                 free_tree(root);
                 root = NULL;
                 printf("Дерево очищено.\n");
                 break;
 
-            /* ── 0. Выход ───────────────────────────────────────────────── */
             case 0:
                 printf("Выход.\n");
                 free_tree(root);
